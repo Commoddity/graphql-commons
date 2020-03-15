@@ -1,9 +1,10 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import axios from 'axios';
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
 
 import Home from 'views/HomePage/Home.js';
-// import LandingPage from "views/LandingPage/LandingPage.js";
 import ProfilePage from 'views/ProfilePage/ProfilePage.js';
 import LoginPage from 'views/LoginPage/LoginPage.js';
 import SignupPage from 'views/SignupPage/SignupPage.js';
@@ -11,42 +12,38 @@ import WatchListPage from 'views/WatchListPage/WatchListPage.js';
 import LoadingSpinner from 'views/LoadingSpinner/LoadingSpinner.js';
 import Header from 'views/Header/Header';
 
-import useLoading from 'hooks/useLoading';
+const MAIN_PAGE_DATA = gql`
+  {
+    bills {
+      parliamentary_session_id {
+        id
+      }
+      code
+      title
+      description
+      introduced_date
+      summary_url
+      page_url
+      full_text_url
+      passed
+      categories {
+        id
+      }
+    }
+    categories {
+      id
+      name
+      uclassify_class
+    }
+  }
+`;
 
-const App = (props) => {
+export default function App(props) {
   const [user, setUser] = useState();
   const [loggedIn, setLoggedIn] = useState(false);
-  const [bills, setBills] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const { loading, updateLoadingState } = useLoading(
-    bills.length === 0 ? true : false
-  );
+  const { loading, error, data } = useQuery(MAIN_PAGE_DATA);
 
-  // Loads initial page state and fetches bills/categories
-  useEffect(() => {
-    loginStatus();
-    fetchBills();
-  }, []);
-
-  // Fetches bills from the Rails back end
-  const fetchBills = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_COMMONS_API}/bills`
-      );
-
-      const sortedBills = response.data.bills.sort(
-        (a, b) => new Date(b.introduced_date) - new Date(a.introduced_date)
-      );
-
-      setBills(sortedBills);
-      setCategories(response.data.categories);
-      updateLoadingState(false);
-    } catch (error) {
-      console.error('Error occurred on fetchBills:', error);
-    }
-  };
-
+  // loginStatus();
   const loginStatus = async () => {
     try {
       const response = await axios.get(
@@ -99,36 +96,39 @@ const App = (props) => {
   };
 
   const handleLogout = async () => {
-    updateLoadingState(true);
+    // updateLoadingState(true);
     try {
       await axios.delete(`${process.env.REACT_APP_COMMONS_API}/logout`);
       setUser(null);
       setLoggedIn(false);
       props.history.push('/');
-      updateLoadingState(false);
+      // updateLoadingState(false);
     } catch (error) {
-      updateLoadingState(false);
+      // updateLoadingState(false);
       console.error(`Error occurred on handleProfileUpdate: ${error}`);
     }
   };
 
-  return (
-    <div>
-      <Router history={props.hist}>
-        {loading && (
-          <div
-            style={{
-              minHeight: '100vh',
-              minWidth: '100vw',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center'
-            }}
-          >
-            <LoadingSpinner></LoadingSpinner>
-          </div>
-        )}
-        {!loading && (
+  if (loading)
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          minWidth: '100vw',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}
+      >
+        <LoadingSpinner></LoadingSpinner>
+      </div>
+    );
+  if (error) return `Error! ${error.message}`;
+
+  if (data)
+    return (
+      <div>
+        <Router history={props.hist}>
           <Fragment>
             <Header
               color="transparent"
@@ -150,8 +150,8 @@ const App = (props) => {
                 render={(props) => (
                   <Home
                     {...props}
-                    bills={bills}
-                    categories={categories}
+                    bills={data.bills}
+                    categories={data.categories}
                     handleLogout={handleLogout}
                     loggedInStatus={loggedIn}
                     user={user}
@@ -175,7 +175,7 @@ const App = (props) => {
                 render={(props) => (
                   <SignupPage
                     {...props}
-                    categories={categories}
+                    categories={data.categories}
                     handleLogin={handleLogin}
                     loggedInStatus={loggedIn}
                   />
@@ -186,9 +186,9 @@ const App = (props) => {
                 render={(props) => (
                   <WatchListPage
                     {...props}
-                    bills={bills}
                     user={user}
-                    categories={categories}
+                    bills={data.bills}
+                    categories={data.categories}
                     handleLogin={handleLogin}
                     loggedInStatus={loggedIn}
                     updateWatchList={updateWatchList}
@@ -201,17 +201,15 @@ const App = (props) => {
                   <ProfilePage
                     user={user}
                     handleProfileUpdate={handleProfileUpdate}
-                    categories={categories}
+                    categories={data.categories}
                     loggedInStatus={loggedIn}
                   />
                 )}
               />
             </Switch>
           </Fragment>
-        )}
-      </Router>
-    </div>
-  );
-};
-
-export default App;
+          )
+        </Router>
+      </div>
+    );
+}

@@ -155,17 +155,15 @@ export default function BillCard(props) {
 
   // Formats the date to use "Month Day, Year" format
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  // Adding the ' ' forces using UTC time, avoiding wrong day due to offset
-  const validDate = new Date(props.bill.introduced_date + ' ');
+  const validDate = new Date(props.bill.introduced_date);
   const introduced_date = !isNaN(validDate) ? validDate : null;
 
   const eventCards =
     Array.isArray(events) &&
     events.map((event) => {
-      // Adding the ' ' forces using UTC time, avoiding wrong day due to offset
-      const publication_date = new Date(event.publication_date + ' ');
+      const publication_date = new Date(event.publication_date);
       return (
-        <CardContent>
+        <CardContent key={event.id}>
           <Grid container justify="center">
             <Grid
               item
@@ -193,9 +191,9 @@ export default function BillCard(props) {
     });
 
   return (
-    <Card className={classes.root}>
+    <Card className={classes.root} key={props.bill.id}>
       <CardContent>
-        <Grid container justify="center">
+        <Grid container spacing={3} justify="center">
           <Grid
             item
             xs={6}
@@ -203,7 +201,6 @@ export default function BillCard(props) {
             md={2}
             lg={2}
             xl={1}
-            spacing={3}
             className={classes.status}
           >
             <Tooltip
@@ -225,7 +222,7 @@ export default function BillCard(props) {
                 <Chip
                   label="Passed"
                   className={classes.billChips}
-                  variant="contained"
+                  variant="default"
                   color="primary"
                   icon={<DoneOutlineIcon />}
                 />
@@ -235,7 +232,7 @@ export default function BillCard(props) {
                 <Chip
                   label="Defeated"
                   className={classes.billChips}
-                  variant="contained"
+                  variant="default"
                   color="secondary"
                   icon={<ClearIcon />}
                 />
@@ -249,7 +246,7 @@ export default function BillCard(props) {
                   label="In Progress"
                   className={classes.billChips}
                   variant="outlined"
-                  color="basic"
+                  color="default"
                   icon={<AccessTimeIcon />}
                 />
               </Tooltip>
@@ -275,22 +272,40 @@ export default function BillCard(props) {
                 >
                   {props.bill.description}
                 </Typography>
-                <Grid container xs={12} spacing={2} style={{ display: 'flex' }}>
+                <Grid container spacing={2} style={{ display: 'flex' }}>
                   <Grid item>
-                    <Tooltip
-                      title="View the full text of this bill on parliament's website."
-                      placement="right"
-                    >
-                      <Button
-                        href={props.bill.full_text_url}
-                        target="_blank"
-                        variant="contained"
-                        className={classes.billText}
+                    {props.bill.full_text_url ? (
+                      <Tooltip
+                        title="View the full text of this bill on parliament's website."
+                        placement="right"
                       >
-                        <LibraryBooksIcon style={{ marginRight: '8px' }} />
-                        Full Text
-                      </Button>
-                    </Tooltip>
+                        <Button
+                          href={props.bill.full_text_url}
+                          target="_blank"
+                          variant="contained"
+                          className={classes.billText}
+                        >
+                          <LibraryBooksIcon style={{ marginRight: '8px' }} />
+                          Full Text
+                        </Button>
+                      </Tooltip>
+                    ) : (
+                      <Tooltip
+                        title="The full text for this bill is not available; this link will be updated if the full text becomes available."
+                        placement="right"
+                      >
+                        <div>
+                          <Button
+                            disabled
+                            variant="contained"
+                            className={classes.billText}
+                          >
+                            <LibraryBooksIcon style={{ marginRight: '8px' }} />
+                            Full Text
+                          </Button>
+                        </div>
+                      </Tooltip>
+                    )}
                   </Grid>
                   <Grid item>
                     {props.bill.summary_url ? (
@@ -310,7 +325,7 @@ export default function BillCard(props) {
                       </Tooltip>
                     ) : (
                       <Tooltip
-                        title="The legislative summary for this bill is not yet available. This link will be updated when the summary becomes available."
+                        title="The legislative summary for this bill is not yet available; this link will be updated if a summary is published."
                         placement="right"
                       >
                         <div>
@@ -396,7 +411,7 @@ export default function BillCard(props) {
         </Grid>
       </CardContent>
       <CardActions disableSpacing className={classes.pullRight}>
-        <Typography variant="body" style={{ marginRight: '16px' }}>
+        <Typography xs={12} style={{ marginRight: '16px' }}>
           View events for this bill
         </Typography>
 
@@ -413,16 +428,8 @@ export default function BillCard(props) {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Grid container>
-            <Grid
-              item
-              xs={0}
-              sm={3}
-              md={2}
-              lg={2}
-              xl={1}
-              justify="flex-end"
-            ></Grid>
+          <Grid container justify="flex-end">
+            <Grid item xs={0} sm={3} md={2} lg={2} xl={1}></Grid>
             <Grid
               item
               xs={12}
@@ -430,7 +437,6 @@ export default function BillCard(props) {
               md={10}
               lg={10}
               xl={10}
-              justify="flex-end"
               style={{ paddingRight: 'none' }}
             >
               <Typography>Bill Events</Typography>

@@ -40,7 +40,7 @@ export default function Home(props) {
       </Parallax>
 
       <div className={classNames(classes.main, classes.mainRaised)}>
-        <Typography variant='h4' style={{ textAlign: 'center', margin: '1em' }}>
+        <Typography variant="h4" style={{ textAlign: 'center', margin: '1em' }}>
           See up to date information on bills in session in the House of
           Commons.
         </Typography>

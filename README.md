@@ -1,5 +1,11 @@
 # Commons
 
+# Commons API - Rebuild
+
+## CURRENTLY VERY MUCH NOT READY
+
+#### In the process of rebuilding the original Ruby on Rails backend using Node.js, GraphQL and PostgreSQL.
+
 #### Up-to-date information and notifications about bills in progress in Canada's parliament.
 
 ![Commons App](./docs/commons-readme.png)
@@ -30,7 +36,7 @@ The application also provides an easy way to look up Members of Parliament and r
 
 #### _The business logic of the app is hosted on a separate API server._
 
-#### [Git Repo for the Commons API](https://github.com/Commoddity/commons-api)
+#### [Git Repo for the Commons API](https://github.com/Commoddity/graphql-commons-api)
 
 ### Website URL
 

@@ -11,8 +11,8 @@ export default function Bills(props) {
   const billCards = bills.map((bill) => {
     return (
       <BillCard
-        user={props.user}
         key={bill.id}
+        user={props.user}
         bill={bill}
         setUser={props.setUser}
         updateWatchList={props.updateWatchList}
