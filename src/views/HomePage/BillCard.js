@@ -429,7 +429,7 @@ export default function BillCard(props) {
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Grid container justify="flex-end">
-            <Grid item xs={0} sm={3} md={2} lg={2} xl={1}></Grid>
+            <Grid item xs={3} sm={3} md={2} lg={2} xl={1}></Grid>
             <Grid
               item
               xs={12}

@@ -13,7 +13,8 @@ import { createBrowserHistory } from 'history';
 let history = createBrowserHistory();
 
 const client = new ApolloClient({
-  uri: `${process.env.REACT_APP_COMMONS_API}/api`
+  uri: `${process.env.REACT_APP_COMMONS_API}/api`,
+  credentials: 'include'
 });
 
 const theme = createMuiTheme({
