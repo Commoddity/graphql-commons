@@ -12,6 +12,14 @@ import WatchListPage from 'views/WatchListPage/WatchListPage.js';
 import LoadingSpinner from 'views/LoadingSpinner/LoadingSpinner.js';
 import Header from 'views/Header/Header';
 
+const Notify = ({ errorMessage }) => {
+  if (!errorMessage) {
+    return null;
+  }
+
+  return <div style={{ color: 'red' }}>{errorMessage}</div>;
+};
+
 const MAIN_PAGE_DATA = gql`
   {
     bills {
@@ -40,8 +48,10 @@ const MAIN_PAGE_DATA = gql`
 `;
 
 export default function App(props) {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState({});
   const [loggedIn, setLoggedIn] = useState(false);
+  const [token, setToken] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const { loading, error, data } = useQuery(MAIN_PAGE_DATA);
 
   // loginStatus();
@@ -83,15 +93,16 @@ export default function App(props) {
     }
   };
 
-  const updateWatchList = (user_bills) => {
-    setUser((prev) => ({
-      ...prev,
-      user_bills
-    }));
-  };
+  // const updateWatchList = (user_bills) => {
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     user_bills
+  //   }));
+  // };
 
   // Login/logout handlers
   const handleLogin = (data) => {
+    console.log('handle login', data);
     setUser(data.user);
     setLoggedIn(true);
   };
@@ -125,6 +136,12 @@ export default function App(props) {
       </div>
     );
   if (error) return `Error! ${error.message}`;
+  const notify = (message) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 5000);
+  };
 
   if (data)
     return (
@@ -156,18 +173,18 @@ export default function App(props) {
                     handleLogout={handleLogout}
                     loggedInStatus={loggedIn}
                     user={user}
-                    updateWatchList={updateWatchList}
                   />
                 )}
               />
               <Route
                 path="/login-page"
-                render={(props) => (
+                render={() => (
                   <LoginPage
-                    {...props}
                     handleLogin={handleLogin}
                     loggedInStatus={loggedIn}
-                    history={props.history}
+                    setError={notify}
+                    setToken={setToken}
+                    // history={props.history}
                   />
                 )}
               />
@@ -192,7 +209,6 @@ export default function App(props) {
                     categories={data.categories}
                     handleLogin={handleLogin}
                     loggedInStatus={loggedIn}
-                    updateWatchList={updateWatchList}
                   />
                 )}
               />

@@ -26,7 +26,6 @@ import ClearIcon from '@material-ui/icons/Clear';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 
 import clsx from 'clsx';
-import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,15 +43,15 @@ const useStyles = makeStyles((theme) => ({
     transform: 'rotate(180deg)'
   },
   avatar: {
-    backgroundColor: red[500],
-    borderRadius: '100%',
-    width: '75px',
-    height: '75px',
-    color: '#FFF',
-    fontWeight: 900,
-    boxShadow: '10px 17px 24px -13px rgba(0,0,0,0.5)',
-    margin: theme.spacing(2),
-    transition: 'all 0.5s ease-in-out',
+    'backgroundColor': red[500],
+    'borderRadius': '100%',
+    'width': '75px',
+    'height': '75px',
+    'color': '#FFF',
+    'fontWeight': 900,
+    'boxShadow': '10px 17px 24px -13px rgba(0,0,0,0.5)',
+    'margin': theme.spacing(2),
+    'transition': 'all 0.5s ease-in-out',
     '&:hover,&:focus': {
       color: '#10021a',
       background: '#fa7c70',
@@ -62,8 +61,8 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   billText: {
-    backgroundColor: grey[200],
-    transition: 'all 0.5s ease-in-out',
+    'backgroundColor': grey[200],
+    'transition': 'all 0.5s ease-in-out',
     '&:hover,&:focus': {
       color: '#10021a',
       background: '#fa7c70',
@@ -156,17 +155,8 @@ export default function BillCard(props) {
     const watchlist_bill = {
       id: { bill_id: props.bill.id, user_id: props.user.id }
     };
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_COMMONS_API}/bill_users`,
-        watchlist_bill
-      );
-      color === 'grey' ? setColor('red') : setColor('grey');
-      props.updateWatchList(response.data.watchlist);
-      setOpen(true);
-    } catch (error) {
-      console.error(`Error occurred on handleWatchSubmit: ${error}`);
-    }
+    color === 'grey' ? setColor('red') : setColor('grey');
+    setOpen(true);
   };
 
   const handleClose = (reason) => {
@@ -410,11 +400,11 @@ export default function BillCard(props) {
                     style={{
                       backgroundColor: '#f44336'
                     }}
-                    message={
-                      props.user.user_bills.includes(props.bill.id)
-                        ? `Bill ${props.bill.code} added to watchlist`
-                        : `Bill ${props.bill.code} removed from watchlist`
-                    }
+                    // message={
+                    //   props.user.user_bills.includes(props.bill.id)
+                    //     ? `Bill ${props.bill.code} added to watchlist`
+                    //     : `Bill ${props.bill.code} removed from watchlist`
+                    // }
                     action={
                       <>
                         <IconButton

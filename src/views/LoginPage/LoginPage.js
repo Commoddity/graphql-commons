@@ -37,6 +37,8 @@ export default function LoginPage(props) {
           <GridItem>
             <Card className={classes[cardAnimaton]}>
               <Login
+                setError={props.notify}
+                setToken={props.setToken}
                 handleLogin={props.handleLogin}
                 loggedInStatus={props.loggedInStatus}
                 history={props.history}
