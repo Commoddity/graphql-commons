@@ -18,6 +18,7 @@ const MAIN_PAGE_DATA = gql`
       parliamentary_session_id {
         id
       }
+      id
       code
       title
       description

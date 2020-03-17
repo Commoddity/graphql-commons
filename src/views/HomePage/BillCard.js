@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -42,15 +44,15 @@ const useStyles = makeStyles((theme) => ({
     transform: 'rotate(180deg)'
   },
   avatar: {
-    'backgroundColor': red[500],
-    'borderRadius': '100%',
-    'width': '75px',
-    'height': '75px',
-    'color': '#FFF',
-    'fontWeight': 900,
-    'boxShadow': '10px 17px 24px -13px rgba(0,0,0,0.5)',
-    'margin': theme.spacing(2),
-    'transition': 'all 0.5s ease-in-out',
+    backgroundColor: red[500],
+    borderRadius: '100%',
+    width: '75px',
+    height: '75px',
+    color: '#FFF',
+    fontWeight: 900,
+    boxShadow: '10px 17px 24px -13px rgba(0,0,0,0.5)',
+    margin: theme.spacing(2),
+    transition: 'all 0.5s ease-in-out',
     '&:hover,&:focus': {
       color: '#10021a',
       background: '#fa7c70',
@@ -60,8 +62,8 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   billText: {
-    'backgroundColor': grey[200],
-    'transition': 'all 0.5s ease-in-out',
+    backgroundColor: grey[200],
+    transition: 'all 0.5s ease-in-out',
     '&:hover,&:focus': {
       color: '#10021a',
       background: '#fa7c70',
@@ -94,12 +96,47 @@ const useStyles = makeStyles((theme) => ({
  *  onRender: ()
  * }} props
  */
+
+const EVENTS_FOR_BILL = gql`
+  query Events($bill_code: String!) {
+    events(bill_code: $bill_code) {
+      id
+      title
+      publication_date
+    }
+  }
+`;
+
+const ADD_USER_BILL = gql`
+  mutation($user_id: Int!, $bill_id: Int!) {
+    addUserBill(user_id: $user_id, bill_id: $bill_id) {
+      user_id
+      bill_id
+    }
+  }
+`;
+
+const DELETE_USER_BILL = gql`
+  mutation($user_id: Int!, $bill_id: Int!) {
+    deleteUserBill(user_id: $user_id, bill_id: $bill_id) {
+      user_id
+      bill_id
+    }
+  }
+`;
+
 export default function BillCard(props) {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const [events, setEvents] = useState('No events currently loaded.');
   const [color, setColor] = useState('');
   const [open, setOpen] = useState(false);
+  const [getEvents, { loadingEvents, data }] = useLazyQuery(EVENTS_FOR_BILL);
+  // IMPLEMENT THESE MUTATIONS IN WATCHLIST ADD/REMOVE BUTTON
+  const [addUserBill, { loadingAddUserBill }] = useMutation(ADD_USER_BILL);
+  const [deleteUserBill, { loadingRemoveUserBill }] = useMutation(
+    DELETE_USER_BILL
+  );
 
   useEffect(() => {
     props.user &&
@@ -109,11 +146,16 @@ export default function BillCard(props) {
       : setColor('grey');
   }, []);
 
+  useEffect(() => {
+    if (!loadingEvents && data) {
+      setEvents(data.events);
+    }
+  }, [data]);
+
   const handleWatchSubmit = async () => {
     const watchlist_bill = {
       id: { bill_id: props.bill.id, user_id: props.user.id }
     };
-
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_COMMONS_API}/bill_users`,
@@ -127,20 +169,6 @@ export default function BillCard(props) {
     }
   };
 
-  const getEventsForBill = async (bill_id) => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_COMMONS_API}/events/${bill_id}`,
-        {
-          bill_id
-        }
-      );
-      setEvents(response.data.events);
-    } catch (error) {
-      console.error(`Error occurred on getEventsForBill: ${props.bill.code}`);
-    }
-  };
-
   const handleClose = (reason) => {
     if (reason === 'clickaway') {
       return;
@@ -149,8 +177,12 @@ export default function BillCard(props) {
   };
 
   const handleExpandClick = () => {
-    setExpanded(!expanded);
-    getEventsForBill(props.bill.id);
+    getEvents({
+      variables: { bill_code: props.bill.code }
+    });
+    if (!loadingEvents) {
+      setExpanded(!expanded);
+    }
   };
 
   // Formats the date to use "Month Day, Year" format
@@ -164,19 +196,18 @@ export default function BillCard(props) {
       const publication_date = new Date(event.publication_date);
       return (
         <CardContent key={event.id}>
-          <Grid container justify="center">
+          <Grid container spacing={3} justify="center">
             <Grid
               item
-              xs={0}
+              xs={3}
               sm={3}
               md={2}
               lg={2}
               xl={1}
-              spacing={3}
               className={classes.status}
             ></Grid>
             <Grid item xs={4} sm={3} md={3} lg={3} xl={3}>
-              <Typography body>
+              <Typography>
                 <strong>
                   {publication_date.toLocaleDateString('en-US', options)}
                 </strong>
@@ -270,7 +301,9 @@ export default function BillCard(props) {
                   component="p"
                   style={{ marginBottom: '24px' }}
                 >
-                  {props.bill.description}
+                  {props.bill.description
+                    ? props.bill.description
+                    : `No description is currently available for Bill ${props.bill.code}`}
                 </Typography>
                 <Grid container spacing={2} style={{ display: 'flex' }}>
                   <Grid item>
@@ -414,7 +447,6 @@ export default function BillCard(props) {
         <Typography xs={12} style={{ marginRight: '16px' }}>
           View events for this bill
         </Typography>
-
         <IconButton
           className={clsx(classes.expand, {
             [classes.expandOpen]: expanded
