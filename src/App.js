@@ -12,14 +12,6 @@ import WatchListPage from 'views/WatchListPage/WatchListPage.js';
 import LoadingSpinner from 'views/LoadingSpinner/LoadingSpinner.js';
 import Header from 'views/Header/Header';
 
-const Notify = ({ errorMessage }) => {
-  if (!errorMessage) {
-    return null;
-  }
-
-  return <div style={{ color: 'red' }}>{errorMessage}</div>;
-};
-
 const MAIN_PAGE_DATA = gql`
   {
     bills {
@@ -72,13 +64,19 @@ const USER_DATA_QUERY = gql`
 export default function App(props) {
   const [user, setUser] = useState({});
   const [loggedIn, setLoggedIn] = useState(false);
-  const { loading, error, data } = useQuery(MAIN_PAGE_DATA);
-  const [getUser, { loadingUser, userData }] = useLazyQuery(USER_DATA_QUERY);
+  const { loading: mainLoading, error: mainError, data: mainData } = useQuery(
+    MAIN_PAGE_DATA
+  );
+  const [
+    getUser,
+    { loading: userLoading, error: userError, data: userData }
+  ] = useLazyQuery(USER_DATA_QUERY);
 
   useEffect(() => {
-    if (!loadingUser && data) {
-      setUser(data.user);
-      console.log('IN USE EFFECT', user);
+    if (!userLoading && userData) {
+      console.log('IN USE EFFECT', userData);
+      setUser(userData.user);
+      setLoggedIn(true);
     }
   }, [userData]);
 
@@ -150,7 +148,7 @@ export default function App(props) {
     }
   };
 
-  if (loading)
+  if (mainLoading)
     return (
       <div
         style={{
@@ -164,9 +162,9 @@ export default function App(props) {
         <LoadingSpinner></LoadingSpinner>
       </div>
     );
-  if (error) return `Error! ${error.message}`;
+  if (mainError) return `Error! ${mainError.message}`;
 
-  if (data)
+  if (mainData)
     return (
       <div>
         <Router>
@@ -191,8 +189,8 @@ export default function App(props) {
                 render={(props) => (
                   <Home
                     {...props}
-                    bills={data.bills}
-                    categories={data.categories}
+                    bills={mainData.bills}
+                    categories={mainData.categories}
                     handleLogout={handleLogout}
                     loggedInStatus={loggedIn}
                     user={user}
@@ -213,7 +211,7 @@ export default function App(props) {
                 render={(props) => (
                   <SignupPage
                     {...props}
-                    categories={data.categories}
+                    categories={mainData.categories}
                     handleLogin={handleLogin}
                     loggedInStatus={loggedIn}
                   />
@@ -225,8 +223,8 @@ export default function App(props) {
                   <WatchListPage
                     {...props}
                     user={user}
-                    bills={data.bills}
-                    categories={data.categories}
+                    bills={mainData.bills}
+                    categories={mainData.categories}
                     handleLogin={handleLogin}
                     loggedInStatus={loggedIn}
                   />
@@ -238,7 +236,7 @@ export default function App(props) {
                   <ProfilePage
                     user={user}
                     handleProfileUpdate={handleProfileUpdate}
-                    categories={data.categories}
+                    categories={mainData.categories}
                     loggedInStatus={loggedIn}
                   />
                 )}
