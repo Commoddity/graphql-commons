@@ -10,36 +10,39 @@ import validationFunctions from '../../helpers/validationFunctions';
 
 const Signup = (props) => {
   const [state, setState] = useState({
-    name: props.name,
+    firstName: props.firstName,
+    lastName: props.lastName,
     username: props.username,
     email: props.email,
     password: '',
     passwordConfirmation: '',
     postalCode: props.postalCode,
     errors: {
-      name: '',
-      username: '',
+      firstName: '',
+      lastName: '',
+      userlastName: '',
       email: '',
       password: '',
       passwordConfirmation: '',
-      postalCode: '',
+      postalCode: ''
     },
     available: {
       usernameTaken: '',
-      emailTaken: '',
-    },
+      emailTaken: ''
+    }
   });
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     validateForm();
   }, [
-    state.name,
+    state.firstName,
+    state.lastName,
     state.username,
     state.email,
     state.password,
     state.passwordConfirmation,
-    state.postalCode,
+    state.postalCode
   ]);
 
   const handleChange = (event) => {
@@ -49,12 +52,12 @@ const Signup = (props) => {
       ...prevState,
       [name]: value,
       errors: {
-        ...prevState.errors,
+        ...prevState.errors
       },
       available: {
         usernameTaken: '',
-        emailTaken: '',
-      },
+        emailTaken: ''
+      }
     }));
   };
 
@@ -73,8 +76,8 @@ const Signup = (props) => {
         ...prevState,
         available: {
           ...prevState.available,
-          [`${field}Taken`]: `${fieldUp} ${param} is already associated with a user account.`,
-        },
+          [`${field}Taken`]: `${fieldUp} ${param} is already associated with a user account.`
+        }
       }));
       console.error(`Error occurred on checkAvailability: ${error}`);
       return false;
@@ -83,12 +86,13 @@ const Signup = (props) => {
 
   const validateForm = () => {
     const formValues = {
-      name: state.name,
+      firstName: state.firstName,
+      lastName: state.lastName,
       username: state.username,
       email: state.email,
       password: state.password,
       passwordConfirmation: state.passwordConfirmation,
-      postalCode: state.postalCode,
+      postalCode: state.postalCode
     };
 
     const errors = {};
@@ -109,8 +113,8 @@ const Signup = (props) => {
       ...prevState,
       errors,
       available: {
-        ...prevState.available,
-      },
+        ...prevState.available
+      }
     }));
 
     return isValid;
@@ -131,11 +135,11 @@ const Signup = (props) => {
       ...prev,
       postalCode: prev.postalCode.replace(/ /g, ''),
       errors: {
-        ...prev.errors,
+        ...prev.errors
       },
       available: {
-        ...prev.available,
-      },
+        ...prev.available
+      }
     }));
     validated ? props.nextStep(1, state) : console.error('Invalid Form');
   };
@@ -148,7 +152,7 @@ const Signup = (props) => {
       alignItems: 'center',
       border: 5,
       padding: theme.spacing(2),
-      textAlign: 'center',
+      textAlign: 'center'
     },
     avatar: {
       zIndex: 1000,
@@ -156,30 +160,30 @@ const Signup = (props) => {
       marginBottom: theme.spacing(2),
       width: '120px',
       height: '120px',
-      backgroundColor: '#29c0a8',
+      backgroundColor: '#29c0a8'
     },
     form: {
       zIndex: 1000,
       width: '100%', // Fix IE 11 issue.
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1),
-      textAlign: 'center',
+      textAlign: 'center'
     },
     submit: {
       margin: theme.spacing(3, 0, 2),
-      backgroundColor: '#29c0a8',
+      backgroundColor: '#29c0a8'
     },
     accountCircle: {
       width: '90px',
       height: '90px',
-      color: 'white',
+      color: 'white'
     },
     button: {
-      margin: '1em',
+      margin: '1em'
     },
     error: {
-      color: 'red',
-    },
+      color: 'red'
+    }
   }));
   const classes = useStyles();
 
@@ -220,12 +224,27 @@ const Signup = (props) => {
           margin="normal"
           required
           fullWidth
-          error={submitted && state.errors.name.length > 0}
-          helperText={submitted ? state.errors.name : ''}
-          id="name"
-          label="Name"
-          name="name"
-          autoComplete="name"
+          error={submitted && state.errors.firstName.length > 0}
+          helperText={submitted ? state.errors.firstName : ''}
+          id="first-name"
+          label="First Name"
+          name="firstName"
+          autoComplete="first-name"
+          autoFocus
+          defaultValue={state.firstName}
+          onChange={(e) => handleChange(e.target)}
+        />
+        <TextField
+          variant="outlined"
+          margin="normal"
+          required
+          fullWidth
+          error={submitted && state.errors.lastName.length > 0}
+          helperText={submitted ? state.errors.lastName : ''}
+          id="last-name"
+          label="Last Name"
+          name="lastName"
+          autoComplete="last-name"
           autoFocus
           defaultValue={state.name}
           onChange={(e) => handleChange(e.target)}

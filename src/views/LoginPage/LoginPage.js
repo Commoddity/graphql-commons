@@ -41,7 +41,6 @@ export default function LoginPage(props) {
                 setToken={props.setToken}
                 handleLogin={props.handleLogin}
                 loggedInStatus={props.loggedInStatus}
-                history={props.history}
               />
             </Card>
           </GridItem>

@@ -8,7 +8,8 @@ import axios from 'axios';
 import { Typography } from '@material-ui/core';
 
 const UserForm = (props) => {
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,7 +38,8 @@ const UserForm = (props) => {
   //Handles login submit
   const handleSubmit = async () => {
     let user = {
-      name: name,
+      firstName: firstName,
+      lastName: lastName,
       username: username,
       email: email,
       password: password,
@@ -46,14 +48,14 @@ const UserForm = (props) => {
       email_notification: emailNotification,
       sms_notification: smsNotification,
       phone_number: phoneNumber,
-      categories: Object.keys(clicked),
+      categories: Object.keys(clicked)
     };
 
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_COMMONS_API}/users`,
         {
-          user,
+          user
         }
       );
       if (response.data.status === 'created') {
@@ -86,8 +88,11 @@ const UserForm = (props) => {
   // Proceed to next step of the signup form
   const nextStep = (justFinishedStep, data) => {
     if (justFinishedStep === 1) {
-      if (data.name) {
-        setName(data.name);
+      if (data.firstName) {
+        setFirstName(data.firstName);
+      }
+      if (data.lastName) {
+        setLastName(data.lastName);
       }
       if (data.username) {
         setUsername(data.username);
@@ -131,7 +136,8 @@ const UserForm = (props) => {
         return (
           <Signup
             nextStep={nextStep}
-            name={name}
+            firstName={firstName}
+            lastName={lastName}
             username={username}
             email={email}
             postalCode={postalCode}
@@ -165,7 +171,8 @@ const UserForm = (props) => {
             prevStep={prevStep}
             nextStep={nextStep}
             details={{
-              name: name,
+              firstName: firstName,
+              lastName: lastName,
               username: username,
               email: email,
               password: password,
@@ -173,7 +180,7 @@ const UserForm = (props) => {
               email_notification: emailNotification,
               sms_notification: smsNotification,
               phone_number: phoneNumber,
-              categories: Object.keys(clicked),
+              categories: Object.keys(clicked)
             }}
           />
         );

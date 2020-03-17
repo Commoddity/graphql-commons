@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import axios from 'axios';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
 import Home from 'views/HomePage/Home.js';
@@ -47,12 +47,40 @@ const MAIN_PAGE_DATA = gql`
   }
 `;
 
+const USER_DATA_QUERY = gql`
+  query Users($id: Int!) {
+    user(id: $id) {
+      id
+      first_name
+      last_name
+      username
+      email
+      phone_number
+      postal_code
+      email_notification
+      sms_notification
+      bills {
+        id
+      }
+      categories {
+        id
+      }
+    }
+  }
+`;
+
 export default function App(props) {
   const [user, setUser] = useState({});
   const [loggedIn, setLoggedIn] = useState(false);
-  const [token, setToken] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
   const { loading, error, data } = useQuery(MAIN_PAGE_DATA);
+  const [getUser, { loadingUser, userData }] = useLazyQuery(USER_DATA_QUERY);
+
+  useEffect(() => {
+    if (!loadingUser && data) {
+      setUser(data.user);
+      console.log('IN USE EFFECT', user);
+    }
+  }, [userData]);
 
   // loginStatus();
   const loginStatus = async () => {
@@ -102,9 +130,10 @@ export default function App(props) {
 
   // Login/logout handlers
   const handleLogin = (data) => {
-    console.log('handle login', data);
-    setUser(data.user);
-    setLoggedIn(true);
+    console.log('GET USER', data.id);
+    getUser({
+      variables: { id: data.id }
+    });
   };
 
   const handleLogout = async () => {
@@ -136,17 +165,11 @@ export default function App(props) {
       </div>
     );
   if (error) return `Error! ${error.message}`;
-  const notify = (message) => {
-    setErrorMessage(message);
-    setTimeout(() => {
-      setErrorMessage(null);
-    }, 5000);
-  };
 
   if (data)
     return (
       <div>
-        <Router history={props.hist}>
+        <Router>
           <Fragment>
             <Header
               color="transparent"
@@ -182,9 +205,6 @@ export default function App(props) {
                   <LoginPage
                     handleLogin={handleLogin}
                     loggedInStatus={loggedIn}
-                    setError={notify}
-                    setToken={setToken}
-                    // history={props.history}
                   />
                 )}
               />

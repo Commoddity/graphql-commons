@@ -380,13 +380,13 @@ export default function BillCard(props) {
             style={{ textAlign: 'right' }}
           >
             {props.user ? (
-              <IconButton aria-label="settings">
-                <BookmarkIcon
-                  style={{ color: color }}
-                  onClick={() => {
-                    handleWatchSubmit();
-                  }}
-                />
+              <IconButton
+                aria-label="settings"
+                onClick={() => {
+                  handleWatchSubmit();
+                }}
+              >
+                <BookmarkIcon style={{ color: color }} />
                 <Snackbar
                   anchorOrigin={{
                     vertical: 'bottom',

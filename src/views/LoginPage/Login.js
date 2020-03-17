@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useLazyQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -19,12 +18,11 @@ const LOGIN_USER = gql`
       user {
         id
       }
-      value
     }
   }
 `;
 
-const Login = ({ setError, setToken }) => {
+const Login = (props) => {
   const [state, setState] = useState({
     email: '',
     password: '',
@@ -35,40 +33,22 @@ const Login = ({ setError, setToken }) => {
     invalid: ''
   });
   const [submitted, setSubmitted] = useState(false);
-  const [loginUser, result] = useMutation(LOGIN_USER, {
-    onError: (error) => {
-      setError(error.graphQLErrors[0].message);
+  const [loginUser, { loading, data }] = useMutation(LOGIN_USER, {});
+
+  const history = useHistory();
+
+  useEffect(() => {
+    if (props.loggedInStatus) {
+      history.push('/');
     }
   });
 
-  // useEffect(() => {
-  //   if (props.loggedInStatus) {
-  //     redirect('/');
-  //   }
-  // });
-
-  // useEffect(() => {
-  //   if (!loading && data) {
-  //     console.log(data);
-  //     props.handleLogin(data);
-  //     if (props.loggedInStatus) {
-  //       redirect('/');
-  //     }
-  //   }
-  // }, [loading, data]);
-
   useEffect(() => {
-    //TUESDAY TO-DO
-    //NEED TO DECIDE HOW TO HANDLE LOGIN ---> SET TOKEN? SET USER? SET LOGGED IN? COMBINATION?
-    //ALSO NEED TO SET MUTATION TO RETURN USERS BILLS AND CATEGORIES
-    //ALSO NEED TO GET AUHTENTICATION PROPERLY PASSING/FAILING ON THE BACKEND
-    if (result.data) {
-      const token = result.data.loginUser.value;
-      setToken(token);
-      localStorage.setItem('user-token', token);
-      // redirect('/');
+    if (!loading && data) {
+      props.handleLogin(data.loginUser.user);
+      history.push('/');
     }
-  }, [result.data]);
+  }, [data]);
 
   const handleChange = (event) => {
     const { name, value } = event;
@@ -115,18 +95,11 @@ const Login = ({ setError, setToken }) => {
     event.preventDefault();
     setSubmitted(true);
 
-    // let user = {
-    //   email: email,
-    //   password: password
-    // };
-
     if (validateForm(state.errors)) {
       try {
         loginUser({
           variables: { email: email, password: password }
         });
-        // console.log(data);
-        redirect('/');
       } catch (error) {
         setState((prevState) => ({
           ...prevState,
@@ -136,10 +109,6 @@ const Login = ({ setError, setToken }) => {
       }
     }
   };
-
-  // const redirect = (uri) => {
-  //   props.history.push(uri);
-  // };
 
   const useStyles = makeStyles((theme) => ({
     paper: {
