@@ -12,7 +12,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Container from '@material-ui/core/Container';
 import AnnouncementIcon from '@material-ui/icons/Announcement';
 
-import validationFunctions from '../../helpers/validationFunctions';
+import validateFormHelpers from '../../helpers/validateFormHelpers';
 
 const Notifications = (props) => {
   const [state, setState] = useState({
@@ -20,8 +20,8 @@ const Notifications = (props) => {
     emailNotification: props.emailNotification,
     phoneNumber: props.phoneNumber,
     errors: {
-      phoneNumber: '',
-    },
+      phoneNumber: ''
+    }
   });
   const [submitted, setSubmitted] = useState(false);
 
@@ -30,12 +30,12 @@ const Notifications = (props) => {
     let errors = state.errors;
     const parsedValue = value.replace(/\D+/g, '');
 
-    errors.phoneNumber = validationFunctions.phoneNumber(parsedValue);
+    errors.phoneNumber = validateFormHelpers.phoneNumber(parsedValue);
 
     setState((prevState) => ({
       ...prevState,
       phoneNumber: parsedValue,
-      errors,
+      errors
     }));
   };
 
@@ -64,14 +64,14 @@ const Notifications = (props) => {
     setState((prev) => ({
       ...prev,
       emailNotification: !prev.emailNotification,
-      errors: { ...prev.errors },
+      errors: { ...prev.errors }
     }));
   };
   const handleSmsCheck = () => {
     setState((prev) => ({
       ...prev,
       smsNotification: !prev.smsNotification,
-      errors: { ...prev.errors },
+      errors: { ...prev.errors }
     }));
   };
 
@@ -83,7 +83,7 @@ const Notifications = (props) => {
       alignItems: 'center',
       border: 5,
       padding: theme.spacing(2),
-      textAlign: 'center',
+      textAlign: 'center'
     },
     avatar: {
       zIndex: 1000,
@@ -91,26 +91,26 @@ const Notifications = (props) => {
       marginBottom: theme.spacing(2),
       width: '120px',
       height: '120px',
-      backgroundColor: '#29c0a8',
+      backgroundColor: '#29c0a8'
     },
     formControl: {
       zIndex: 1000,
       width: '100%', // Fix IE 11 issue.
       marginTop: theme.spacing(1),
-      textAlign: 'left',
+      textAlign: 'left'
     },
     submit: {
       margin: theme.spacing(3, 0, 2),
-      backgroundColor: '#29c0a8',
+      backgroundColor: '#29c0a8'
     },
     accountCircle: {
       width: '90px',
       height: '90px',
-      color: 'white',
+      color: 'white'
     },
     error: {
-      color: 'red',
-    },
+      color: 'red'
+    }
   }));
   const classes = useStyles();
 

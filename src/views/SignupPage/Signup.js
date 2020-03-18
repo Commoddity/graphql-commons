@@ -6,7 +6,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
 import axios from 'axios';
 
-import validationFunctions from '../../helpers/validationFunctions';
+import validateFormHelpers from '../../helpers/validateFormHelpers';
 
 const Signup = (props) => {
   const [state, setState] = useState({
@@ -101,8 +101,8 @@ const Signup = (props) => {
     for (const key in formValues) {
       const problem =
         key === 'passwordConfirmation'
-          ? validationFunctions[key](formValues[key], formValues.password)
-          : validationFunctions[key](formValues[key]);
+          ? validateFormHelpers[key](formValues[key], formValues.password)
+          : validateFormHelpers[key](formValues[key]);
       errors[key] = problem;
       if (problem && problem.length) {
         isValid = false;

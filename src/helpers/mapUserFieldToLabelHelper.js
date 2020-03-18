@@ -1,4 +1,4 @@
-const mapUserFieldToLabel = (field) => {
+const mapUserFieldToLabelHelper = (field) => {
   const mapping = {
     name: 'Name',
     username: 'Username',
@@ -12,4 +12,4 @@ const mapUserFieldToLabel = (field) => {
   return mapping[field];
 };
 
-export default mapUserFieldToLabel;
+module.exports = { mapUserFieldToLabelHelper };

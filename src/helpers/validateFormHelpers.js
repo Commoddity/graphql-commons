@@ -1,11 +1,17 @@
-const validationFunctions = {
+const validateFormHelpers = {
   id: () => {
     return '';
   },
-  name: (value) => {
+  firstName: (value) => {
     const validNameRegex = RegExp(/^([a-zA-Z -]+)$/);
-    return value.length < 4 || !validNameRegex.test(value)
-      ? 'Name must be 4 characters long and only contain letters and spaces.'
+    return !validNameRegex.test(value)
+      ? 'First name must only contain letters and spaces.'
+      : '';
+  },
+  lastName: (value) => {
+    const validNameRegex = RegExp(/^([a-zA-Z -]+)$/);
+    return !validNameRegex.test(value)
+      ? 'Last name must only contain letters and spaces.'
       : '';
   },
   username: (value) => {
@@ -54,7 +60,7 @@ const validationFunctions = {
   },
   categories: () => {
     return '';
-  },
+  }
 };
 
-export default validationFunctions;
+export default validateFormHelpers;

@@ -12,6 +12,8 @@ import WatchListPage from 'views/WatchListPage/WatchListPage.js';
 import LoadingSpinner from 'views/LoadingSpinner/LoadingSpinner.js';
 import Header from 'views/Header/Header';
 
+import { flattenUserRelations } from './helpers/dataParsingHelpers';
+
 const MAIN_PAGE_DATA = gql`
   {
     bills {
@@ -62,7 +64,7 @@ const USER_DATA_QUERY = gql`
 `;
 
 export default function App(props) {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState();
   const [loggedIn, setLoggedIn] = useState(false);
   const { loading: mainLoading, error: mainError, data: mainData } = useQuery(
     MAIN_PAGE_DATA
@@ -74,9 +76,10 @@ export default function App(props) {
 
   useEffect(() => {
     if (!userLoading && userData) {
-      console.log('IN USE EFFECT', userData);
-      setUser(userData.user);
-      setLoggedIn(true);
+      const user = userData ? flattenUserRelations(userData.user) : undefined;
+      const loggedInStatus = userData ? true : false;
+      setUser(user);
+      setLoggedIn(loggedInStatus);
     }
   }, [userData]);
 
@@ -108,7 +111,7 @@ export default function App(props) {
         // back end is only returning the user data and their categories, keep the old
         // user_bills (aka watchlist)
         // Other option is to have the API server return the user's bill
-        setUser((prev) => ({ ...res.data.user, user_bills: prev.user_bills }));
+        setUser((prev) => ({ ...res.data.user, bills: prev.bills }));
       } else {
         console.error(
           `Error occurred on handleProfileUpdate: ${res.data.errors}`
@@ -119,34 +122,21 @@ export default function App(props) {
     }
   };
 
-  // const updateWatchList = (user_bills) => {
+  // const updateWatchList = (bills) => {
   //   setUser((prev) => ({
   //     ...prev,
-  //     user_bills
+  //     bills
   //   }));
   // };
 
   // Login/logout handlers
   const handleLogin = (data) => {
-    console.log('GET USER', data.id);
     getUser({
       variables: { id: data.id }
     });
   };
 
-  const handleLogout = async () => {
-    // updateLoadingState(true);
-    try {
-      await axios.delete(`${process.env.REACT_APP_COMMONS_API}/logout`);
-      setUser(null);
-      setLoggedIn(false);
-      props.history.push('/');
-      // updateLoadingState(false);
-    } catch (error) {
-      // updateLoadingState(false);
-      console.error(`Error occurred on handleProfileUpdate: ${error}`);
-    }
-  };
+  const handleLogout = async () => {};
 
   if (mainLoading)
     return (

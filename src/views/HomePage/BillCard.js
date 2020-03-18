@@ -128,9 +128,12 @@ export default function BillCard(props) {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const [events, setEvents] = useState('No events currently loaded.');
-  const [color, setColor] = useState('');
+  const [color, setColor] = useState();
   const [open, setOpen] = useState(false);
-  const [getEvents, { loadingEvents, data }] = useLazyQuery(EVENTS_FOR_BILL);
+  const [
+    getEvents,
+    { loading: eventsLoading, data: eventsData }
+  ] = useLazyQuery(EVENTS_FOR_BILL);
   // IMPLEMENT THESE MUTATIONS IN WATCHLIST ADD/REMOVE BUTTON
   const [addUserBill, { loadingAddUserBill }] = useMutation(ADD_USER_BILL);
   const [deleteUserBill, { loadingRemoveUserBill }] = useMutation(
@@ -138,18 +141,16 @@ export default function BillCard(props) {
   );
 
   useEffect(() => {
-    props.user &&
-    props.user.user_bills &&
-    props.user.user_bills.includes(props.bill.id)
+    props.user && props.user.bills && props.user.bills.includes(props.bill.id)
       ? setColor('red')
       : setColor('grey');
-  }, []);
+  }, [props.user]);
 
   useEffect(() => {
-    if (!loadingEvents && data) {
-      setEvents(data.events);
+    if (!eventsLoading && eventsData) {
+      setEvents(eventsData.events);
     }
-  }, [data]);
+  }, [eventsData]);
 
   const handleWatchSubmit = async () => {
     const watchlist_bill = {
@@ -170,7 +171,7 @@ export default function BillCard(props) {
     getEvents({
       variables: { bill_code: props.bill.code }
     });
-    if (!loadingEvents) {
+    if (!eventsLoading) {
       setExpanded(!expanded);
     }
   };
@@ -204,7 +205,7 @@ export default function BillCard(props) {
               </Typography>
             </Grid>
             <Grid item xs={8} sm={6} md={7} lg={7} xl={7}>
-              <Typography body>{event.title}</Typography>
+              <Typography>{event.title}</Typography>
             </Grid>
           </Grid>
         </CardContent>
@@ -400,11 +401,11 @@ export default function BillCard(props) {
                     style={{
                       backgroundColor: '#f44336'
                     }}
-                    // message={
-                    //   props.user.user_bills.includes(props.bill.id)
-                    //     ? `Bill ${props.bill.code} added to watchlist`
-                    //     : `Bill ${props.bill.code} removed from watchlist`
-                    // }
+                    message={
+                      color === 'red'
+                        ? `Bill ${props.bill.code} added to watchlist`
+                        : `Bill ${props.bill.code} removed from watchlist`
+                    }
                     action={
                       <>
                         <IconButton

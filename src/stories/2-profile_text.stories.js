@@ -13,8 +13,8 @@ const user = {
   postal_code: 'A1B2C3',
   email_notification: true,
   sms_notification: true,
-  user_categories: [1, 3, 5, 9],
-  user_bills: [3, 5, 6],
+  categories: [1, 3, 5, 9],
+  bills: [3, 5, 6]
 };
 
 const categories = [
@@ -27,7 +27,7 @@ const categories = [
   'seven',
   'eigth',
   'nine',
-  'ten',
+  'ten'
 ];
 
 const handleProfileUpdate = () => {};

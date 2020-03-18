@@ -23,7 +23,7 @@ export default function WatchListPage(props) {
   const [childCategory, setChildCategory] = useState(0);
 
   const bills = props.bills.filter((bill) => {
-    return props.user.user_bills.includes(bill.id);
+    return props.user.bills.includes(bill.id);
   });
 
   return (

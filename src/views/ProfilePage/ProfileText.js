@@ -3,8 +3,8 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import ChipsArray from '../SignupPage/ChipsArray';
 
-import mapUserFieldToLabel from '../../helpers/mapUserFieldToLabel';
-import validationFunctions from '../../helpers/validationFunctions';
+import { mapUserFieldToLabelHelper } from '../../helpers/mapUserFieldToLabelHelper';
+import validateFormHelpers from '../../helpers/validateFormHelpers';
 
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -28,7 +28,7 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
   const [formErrors, setFormErrors] = useState({});
 
   const initialClicked = {};
-  for (const item of user.user_categories) {
+  for (const item of user.categories) {
     initialClicked[item] = true;
   }
   const [clicked, setClicked] = useState(initialClicked);
@@ -95,14 +95,14 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
       let problem = '';
 
       if (key === 'passwordConfirmation') {
-        problem = validationFunctions[key](
+        problem = validateFormHelpers[key](
           formValues[key],
           formValues.password
         );
       } else if (key === 'password') {
-        problem = validationFunctions[`${key}Update`](formValues[key]);
+        problem = validateFormHelpers[`${key}Update`](formValues[key]);
       } else {
-        problem = validationFunctions[key](formValues[key]);
+        problem = validateFormHelpers[key](formValues[key]);
       }
 
       newValidity[key] = problem;
@@ -152,8 +152,8 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
         required
         fullWidth
         id="firstName"
-        label={mapUserFieldToLabel('firstName')}
-        name={mapUserFieldToLabel('firstName')}
+        label={mapUserFieldToLabelHelper('firstName')}
+        name={mapUserFieldToLabelHelper('firstName')}
         InputProps={{
           readOnly: !editStatus
         }}
@@ -170,8 +170,8 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
         required
         fullWidth
         id="lastName"
-        label={mapUserFieldToLabel('lastName')}
-        name={mapUserFieldToLabel('lastName')}
+        label={mapUserFieldToLabelHelper('lastName')}
+        name={mapUserFieldToLabelHelper('lastName')}
         InputProps={{
           readOnly: !editStatus
         }}
@@ -188,8 +188,8 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
         required
         fullWidth
         id="username"
-        label={mapUserFieldToLabel('username')}
-        name={mapUserFieldToLabel('username')}
+        label={mapUserFieldToLabelHelper('username')}
+        name={mapUserFieldToLabelHelper('username')}
         InputProps={{
           readOnly: !editStatus
         }}
@@ -204,8 +204,8 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
         required
         fullWidth
         id="email"
-        label={mapUserFieldToLabel('email')}
-        name={mapUserFieldToLabel('email')}
+        label={mapUserFieldToLabelHelper('email')}
+        name={mapUserFieldToLabelHelper('email')}
         InputProps={{
           readOnly: !editStatus
         }}
@@ -222,8 +222,8 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
             helperText={formErrors.password}
             fullWidth
             id="password"
-            label={mapUserFieldToLabel('password_digest')}
-            name={mapUserFieldToLabel('password_digest')}
+            label={mapUserFieldToLabelHelper('password_digest')}
+            name={mapUserFieldToLabelHelper('password_digest')}
             InputProps={{
               readOnly: !editStatus
             }}
@@ -258,8 +258,8 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
         helperText={formErrors.phoneNumber}
         fullWidth
         id="phone_number"
-        label={mapUserFieldToLabel('phone_number')}
-        name={mapUserFieldToLabel('phone_number')}
+        label={mapUserFieldToLabelHelper('phone_number')}
+        name={mapUserFieldToLabelHelper('phone_number')}
         InputProps={{
           readOnly: !editStatus
         }}
@@ -273,8 +273,8 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
         helperText={formErrors.postalCode}
         fullWidth
         id="postal_code"
-        label={mapUserFieldToLabel('postal_code')}
-        name={mapUserFieldToLabel('postal_code')}
+        label={mapUserFieldToLabelHelper('postal_code')}
+        name={mapUserFieldToLabelHelper('postal_code')}
         InputProps={{
           readOnly: !editStatus
         }}
@@ -291,7 +291,7 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
             disabled={!editStatus}
           />
         }
-        label={mapUserFieldToLabel('email_notification')}
+        label={mapUserFieldToLabelHelper('email_notification')}
       />
       <FormControlLabel
         control={
@@ -302,7 +302,7 @@ const ProfileText = ({ user, handleProfileUpdate, categories }) => {
             disabled={!editStatus}
           />
         }
-        label={mapUserFieldToLabel('sms_notification')}
+        label={mapUserFieldToLabelHelper('sms_notification')}
       />
 
       <ChipsArray

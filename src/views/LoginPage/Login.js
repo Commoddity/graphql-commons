@@ -12,6 +12,44 @@ import { makeStyles } from '@material-ui/core/styles';
 import PersonIcon from '@material-ui/icons/Person';
 import { Typography } from '@material-ui/core';
 
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    zIndex: 1000,
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(4),
+    alignItems: 'center',
+    border: 5,
+    padding: theme.spacing(2),
+    textAlign: 'center'
+  },
+  avatar: {
+    zIndex: 1000,
+    margin: '0 auto',
+    marginBottom: theme.spacing(2),
+    width: '120px',
+    height: '120px',
+    backgroundColor: '#29c0a8'
+  },
+  form: {
+    zIndex: 1000,
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+    textAlign: 'center'
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+    backgroundColor: '#29c0a8'
+  },
+  accountCircle: {
+    width: '100px',
+    height: '100px',
+    color: 'white'
+  },
+  button: {
+    margin: '1em'
+  }
+}));
+
 const LOGIN_USER = gql`
   mutation($email: String!, $password: String!) {
     loginUser(email: $email, password: $password) {
@@ -33,7 +71,10 @@ const Login = (props) => {
     invalid: ''
   });
   const [submitted, setSubmitted] = useState(false);
-  const [loginUser, { loading, data }] = useMutation(LOGIN_USER, {});
+  const [
+    loginUser,
+    { loading: loginLoading, error: loginError, data: loginData }
+  ] = useMutation(LOGIN_USER);
 
   const history = useHistory();
 
@@ -44,11 +85,27 @@ const Login = (props) => {
   });
 
   useEffect(() => {
-    if (!loading && data) {
-      props.handleLogin(data.loginUser.user);
+    if (loginError) {
+      const errorMessage = loginError.toString().split('error: ')[1];
+      setState((prevState) => ({
+        ...prevState,
+        invalid: errorMessage
+      }));
+    } else if (!loginLoading && loginData) {
+      props.handleLogin(loginData.loginUser.user);
       history.push('/');
     }
-  }, [data]);
+  }, [loginData, loginError]);
+
+  // useEffect(() => {
+  //   if (loginError) {
+  //     console.error(`Error occurred on handleSubmit: ${loginError}`);
+  //     setState((prevState) => ({
+  //       ...prevState,
+  //       invalid: `Email or password is not valid.`
+  //     }));
+  //   }
+  // }, [loginError]);
 
   const handleChange = (event) => {
     const { name, value } = event;
@@ -96,57 +153,12 @@ const Login = (props) => {
     setSubmitted(true);
 
     if (validateForm(state.errors)) {
-      try {
-        loginUser({
-          variables: { email: email, password: password }
-        });
-      } catch (error) {
-        setState((prevState) => ({
-          ...prevState,
-          invalid: `Email or password is not valid.`
-        }));
-        console.error(`Error occurred on handleSubmit: ${error}`);
-      }
+      loginUser({
+        variables: { email: email, password: password }
+      });
     }
   };
 
-  const useStyles = makeStyles((theme) => ({
-    paper: {
-      zIndex: 1000,
-      marginTop: theme.spacing(4),
-      marginBottom: theme.spacing(4),
-      alignItems: 'center',
-      border: 5,
-      padding: theme.spacing(2),
-      textAlign: 'center'
-    },
-    avatar: {
-      zIndex: 1000,
-      margin: '0 auto',
-      marginBottom: theme.spacing(2),
-      width: '120px',
-      height: '120px',
-      backgroundColor: '#29c0a8'
-    },
-    form: {
-      zIndex: 1000,
-      width: '100%', // Fix IE 11 issue.
-      marginTop: theme.spacing(1),
-      textAlign: 'center'
-    },
-    submit: {
-      margin: theme.spacing(3, 0, 2),
-      backgroundColor: '#29c0a8'
-    },
-    accountCircle: {
-      width: '100px',
-      height: '100px',
-      color: 'white'
-    },
-    button: {
-      margin: '1em'
-    }
-  }));
   const classes = useStyles();
 
   return (
