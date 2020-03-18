@@ -122,17 +122,17 @@ export default function App(props) {
     }
   };
 
-  // const updateWatchList = (bills) => {
-  //   setUser((prev) => ({
-  //     ...prev,
-  //     bills
-  //   }));
-  // };
+  const updateWatchList = (bills) => {
+    setUser((prevState) => ({
+      ...prevState,
+      bills
+    }));
+  };
 
   // Login/logout handlers
-  const handleLogin = (data) => {
+  const handleLogin = (userId) => {
     getUser({
-      variables: { id: data.id }
+      variables: { id: userId }
     });
   };
 
@@ -168,7 +168,7 @@ export default function App(props) {
                 color: 'white'
               }}
               user={user}
-              loggedIn={loggedIn}
+              loggedInStatus={loggedIn}
               handleLogout={handleLogout}
               {...props}
             />
@@ -179,11 +179,12 @@ export default function App(props) {
                 render={(props) => (
                   <Home
                     {...props}
+                    user={user}
+                    setUser={setUser}
                     bills={mainData.bills}
                     categories={mainData.categories}
                     handleLogout={handleLogout}
                     loggedInStatus={loggedIn}
-                    user={user}
                   />
                 )}
               />
@@ -191,6 +192,8 @@ export default function App(props) {
                 path="/login-page"
                 render={() => (
                   <LoginPage
+                    user={user}
+                    setUser={setUser}
                     handleLogin={handleLogin}
                     loggedInStatus={loggedIn}
                   />
@@ -213,6 +216,7 @@ export default function App(props) {
                   <WatchListPage
                     {...props}
                     user={user}
+                    setUser={setUser}
                     bills={mainData.bills}
                     categories={mainData.categories}
                     handleLogin={handleLogin}

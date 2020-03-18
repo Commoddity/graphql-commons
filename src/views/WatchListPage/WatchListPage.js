@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 // nodejs library that concatenates classes
 import classNames from 'classnames';
 // @material-ui/core components
@@ -17,14 +18,21 @@ import image from 'assets/img/bg8.jpg';
 const useStyles = makeStyles(styles);
 
 export default function WatchListPage(props) {
-  const classes = useStyles();
-  // const { ...rest } = props;
-
   const [childCategory, setChildCategory] = useState(0);
 
-  const bills = props.bills.filter((bill) => {
-    return props.user.bills.includes(bill.id);
+  const history = useHistory();
+
+  useEffect(() => {
+    if (!props.loggedInStatus) {
+      history.push('/');
+    }
   });
+
+  const bills = props.bills.filter((bill) => {
+    return props.user ? props.user.bills.includes(bill.id) : undefined;
+  });
+
+  const classes = useStyles();
 
   return (
     <div>
@@ -58,9 +66,9 @@ export default function WatchListPage(props) {
         {props.user && (
           <Bills
             user={props.user}
+            setUser={props.setUser}
             bills={bills}
             childCategory={childCategory}
-            updateWatchList={props.updateWatchList}
           />
         )}
       </div>

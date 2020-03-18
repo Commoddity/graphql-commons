@@ -17,7 +17,6 @@ export default function Bills(props) {
         user={props.user}
         bill={bill}
         setUser={props.setUser}
-        updateWatchList={props.updateWatchList}
       />
     );
   });

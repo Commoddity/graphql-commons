@@ -53,7 +53,6 @@ export default function Home(props) {
           bills={props.bills}
           childCategory={childCategory}
           setUser={props.setUser}
-          updateWatchList={props.updateWatchList}
         />
       </div>
     </div>

@@ -53,9 +53,7 @@ const useStyles = makeStyles((theme) => ({
 const LOGIN_USER = gql`
   mutation($email: String!, $password: String!) {
     loginUser(email: $email, password: $password) {
-      user {
-        id
-      }
+      id
     }
   }
 `;
@@ -92,20 +90,10 @@ const Login = (props) => {
         invalid: errorMessage
       }));
     } else if (!loginLoading && loginData) {
-      props.handleLogin(loginData.loginUser.user);
+      props.handleLogin(loginData.loginUser.id);
       history.push('/');
     }
   }, [loginData, loginError]);
-
-  // useEffect(() => {
-  //   if (loginError) {
-  //     console.error(`Error occurred on handleSubmit: ${loginError}`);
-  //     setState((prevState) => ({
-  //       ...prevState,
-  //       invalid: `Email or password is not valid.`
-  //     }));
-  //   }
-  // }, [loginError]);
 
   const handleChange = (event) => {
     const { name, value } = event;

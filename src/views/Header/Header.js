@@ -61,7 +61,7 @@ export default function Header(props) {
   const rightLinks = (
     <HeaderLinks
       user={props.user}
-      loggedIn={props.loggedIn}
+      loggedInStatus={props.loggedInStatus}
       handleDrawerToggle={(e) => handleDrawerToggle()}
       handleLogout={props.handleLogout}
     />

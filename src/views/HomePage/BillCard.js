@@ -134,17 +134,13 @@ export default function BillCard(props) {
     getEvents,
     { loading: eventsLoading, data: eventsData }
   ] = useLazyQuery(EVENTS_FOR_BILL);
-  // IMPLEMENT THESE MUTATIONS IN WATCHLIST ADD/REMOVE BUTTON
-  const [addUserBill, { loadingAddUserBill }] = useMutation(ADD_USER_BILL);
-  const [deleteUserBill, { loadingRemoveUserBill }] = useMutation(
-    DELETE_USER_BILL
+  const [updateUserBill] = useMutation(
+    billInWatchlist ? DELETE_USER_BILL : ADD_USER_BILL
   );
 
   useEffect(() => {
-    props.user && props.user.bills && props.user.bills.includes(props.bill.id)
-      ? setColor('red')
-      : setColor('grey');
-  }, [props.user]);
+    billInWatchlist() ? setColor('red') : setColor('grey');
+  }, []);
 
   useEffect(() => {
     if (!eventsLoading && eventsData) {
@@ -153,10 +149,25 @@ export default function BillCard(props) {
   }, [eventsData]);
 
   const handleWatchSubmit = async () => {
-    const watchlist_bill = {
-      id: { bill_id: props.bill.id, user_id: props.user.id }
-    };
-    color === 'grey' ? setColor('red') : setColor('grey');
+    updateUserBill({
+      variables: { user_id: props.user.id, bill_id: props.bill.id }
+    });
+    if (billInWatchlist()) {
+      props.setUser((prevState) => ({
+        ...prevState,
+        bills: [
+          ...prevState.bills.slice(0, prevState.bills.indexOf(props.bill.id)),
+          ...prevState.bills.slice(prevState.bills.indexOf(props.bill.id) + 1)
+        ]
+      }));
+      setColor('grey');
+    } else {
+      props.setUser((prevState) => ({
+        ...prevState,
+        bills: [...prevState.bills, props.bill.id]
+      }));
+      setColor('red');
+    }
     setOpen(true);
   };
 
@@ -175,6 +186,11 @@ export default function BillCard(props) {
       setExpanded(!expanded);
     }
   };
+
+  const billInWatchlist = () =>
+    props.user && props.user.bills && props.user.bills.includes(props.bill.id)
+      ? true
+      : false;
 
   // Formats the date to use "Month Day, Year" format
   const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -402,7 +418,7 @@ export default function BillCard(props) {
                       backgroundColor: '#f44336'
                     }}
                     message={
-                      color === 'red'
+                      billInWatchlist()
                         ? `Bill ${props.bill.code} added to watchlist`
                         : `Bill ${props.bill.code} removed from watchlist`
                     }

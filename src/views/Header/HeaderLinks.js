@@ -18,7 +18,7 @@ const useStyles = makeStyles(styles);
 
 export default function HeaderLinks({
   user,
-  loggedIn,
+  loggedInStatus,
   handleDrawerToggle,
   handleLogout
 }) {
@@ -31,7 +31,7 @@ export default function HeaderLinks({
 
   return (
     <List className={classes.list}>
-      {loggedIn ? (
+      {loggedInStatus ? (
         <Fragment>
           <ListItem className={classes.listItem}>
             {user && (
